@@ -3,7 +3,7 @@
 
 #include <time.h>
 #include <stdbool.h>
-#include <unistd.h> // для ssize_t, если не включен через другие хидеры
+#include <unistd.h>
 
 typedef enum {
     DATA_TYPE_TEMPERATURE,
@@ -23,7 +23,7 @@ typedef union {
     float pressure;
     float humidity;
     gps_data gps;
-    char status[20]; // Размер должен совпадать с серверным
+    char status[20]; 
 } telemetry_value;
 
 typedef struct {
@@ -33,8 +33,6 @@ typedef struct {
     telemetry_value value;
 } telemetry_data;
 
-// Структура virtual_source здесь не нужна клиенту для получения данных,
-// но если оставить файл идентичным серверному, она не помешает.
 typedef struct virtual_source {
     int id;
     telemetry_data_type type;
@@ -51,7 +49,6 @@ typedef struct virtual_source {
     telemetry_data data;
 } virtual_source;
 
-// Прототипы функций генерации не нужны клиенту, но не мешают
 long long get_current_time_ms();
 float generate_temperature(virtual_source *source);
 float generate_pressure(virtual_source *source);
@@ -60,7 +57,6 @@ gps_data generate_gps(virtual_source *source);
 const char *generate_status(virtual_source *source);
 void update_source_reading(virtual_source *source);
 
-// Прототип функции сериализации не нужен клиенту, но не мешает
 ssize_t serialize_telemetry_data(const telemetry_data *data, unsigned char *buffer, size_t buffer_size);
 
-#endif // TELEMETRY_H
+#endif 

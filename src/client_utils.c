@@ -1,7 +1,7 @@
 #include "client_utils.h"
-#include <stdio.h>  // Для perror, printf
-#include <stdlib.h> // Для malloc, realloc, free, exit
-#include <string.h> // Для NULL
+#include <stdio.h>  
+#include <stdlib.h> 
+#include <string.h> 
 
 void error_exit(const char *msg) {
     perror(msg);
@@ -36,9 +36,7 @@ int ensure_buffer_capacity(receive_buffer_t *rb, size_t required_space) {
     if (rb->capacity - rb->length < required_space) {
         size_t new_capacity = rb->capacity;
         while (new_capacity - rb->length < required_space) {
-            // Увеличиваем вдвое или до минимально необходимого размера, если буфер был пуст
              new_capacity = (new_capacity == 0) ? (rb->length + required_space) : new_capacity * 2;
-             // Добавим проверку на случай, если required_space очень большой
              if (new_capacity < rb->length + required_space) {
                 new_capacity = rb->length + required_space;
              }
@@ -46,7 +44,6 @@ int ensure_buffer_capacity(receive_buffer_t *rb, size_t required_space) {
         unsigned char *new_buffer = realloc(rb->buffer, new_capacity);
         if (!new_buffer) {
             perror("realloc failed for receive buffer");
-            // Старый буфер все еще действителен, но мы не можем добавить данные
             return -1;
         }
         rb->buffer = new_buffer;

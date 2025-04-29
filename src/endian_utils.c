@@ -1,9 +1,7 @@
 #include "endian_utils.h"
-#include <string.h> // для memcpy
+#include <string.h>
 #include <stdint.h>
 
-// Определяем стандартные макросы порядка байтов, если они не определены
-// (Это больше для совместимости, на современных системах они должны быть)
 #ifndef __ORDER_LITTLE_ENDIAN__
 #define __ORDER_LITTLE_ENDIAN__ 1234
 #endif
@@ -11,23 +9,18 @@
 #define __ORDER_BIG_ENDIAN__    4321
 #endif
 
-// Определяем текущий порядок байтов, если он не задан компилятором
 #ifndef __BYTE_ORDER__
     #warning "__BYTE_ORDER__ not pre-defined, detecting manually."
-    // Простой способ определения порядка байт во время компиляции (или выполнения)
-    // Лучше полагаться на определение компилятора, если оно есть.
-    union {
+      union {
         uint16_t i;
         char c[2];
-    } _endian_check = { 0x0100 }; // 0x01 у младшего адреса -> Big Endian
+    } _endian_check = { 0x0100 }; 
 
     #define __BYTE_ORDER__ ((_endian_check.c[0] == 1) ? __ORDER_BIG_ENDIAN__ : __ORDER_LITTLE_ENDIAN__)
 
 #endif // __BYTE_ORDER__
 
 
-// Встроенные функции компилятора для смены порядка байт (gcc/clang)
-// Обычно они самые эффективные
 #ifndef __bswap_32
     #define __bswap_32(x) __builtin_bswap32(x)
 #endif
@@ -35,14 +28,7 @@
     #define __bswap_64(x) __builtin_bswap64(x)
 #endif
 
-
-// --- Реализация ---
-
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-
-    // Система Little Endian (например, x86, ARM на macOS/iOS)
-    // htonX: нужно перевернуть байты (Host -> Network=Big)
-    // ntohX: нужно перевернуть байты (Network=Big -> Host)
 
     uint64_t htonll(uint64_t value) {
         return __bswap_64(value);
@@ -79,9 +65,6 @@
     }
 
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-
-    // Система Big Endian (например, старые PowerPC Mac, SPARC)
-    // Порядок байт совпадает с сетевым, преобразование не нужно.
 
     uint64_t htonll(uint64_t value) {
         return value;
